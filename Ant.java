@@ -42,10 +42,12 @@ public class Ant
     public ArrayList<Integer> notVisited(boolean visited[])
     {
         ArrayList<Integer> notVisited = new ArrayList<Integer>();
-        
-        // YOUR CODE GOES HERE - REPLACE THIS DUMMY CODE
-        notVisited = AntTester.initIntArray(new int[]{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1});
-        // END OF YOUR CODE
+
+        for (int i =0; i < visited.length ; i++) {
+            if (visited[i] == false) {
+                notVisited.add(i);
+            }
+        }
         
         return notVisited;
     }
@@ -64,10 +66,10 @@ public class Ant
     public ArrayList<Integer> getEdgeLengths(int currentNode, ArrayList<Integer> notVisited)
     {
         ArrayList<Integer> lengths = new ArrayList<Integer>();
-        
-        // YOUR CODE GOES HERE - REPLACE THIS DUMMY CODE
-        lengths = AntTester.initIntArray(new int[]{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1});
-        // END OF YOUR CODE
+
+        for (int i =0; i < notVisited.size() ; i++) {
+            lengths.add(sim.getEdgeLength(currentNode, notVisited.get(i)));
+        }
         
         return lengths;
     }
@@ -86,9 +88,9 @@ public class Ant
     {
         ArrayList<Double> levels = new ArrayList<Double>();
         
-        // YOUR CODE GOES HERE - REPLACE THIS DUMMY CODE
-        levels = AntTester.initDoubleArray(new double[]{-1.00,-1.00,-1.00,-1.00,-1.00,-1.00,-1.00,-1.00,-1.00,-1.00});
-        // END OF YOUR CODE
+        for (int i =0; i < notVisited.size() ; i++) {
+            levels.add(sim.getPheromoneLevel(currentNode, notVisited.get(i)));
+        }
         
         return levels;
     }
@@ -109,10 +111,21 @@ public class Ant
     public ArrayList<Double> edgeProbabilities(ArrayList<Double> levels, ArrayList<Integer> lengths)
     {
         ArrayList<Double> probabilities = new ArrayList<Double>();
-        
-        // YOUR CODE GOES HERE - REPLACE THIS DUMMY CODE
-        probabilities = AntTester.initDoubleArray(new double[]{0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1});
-        // END OF YOUR CODE
+
+        double alpha = sim.getAlpha(); 
+        double beta = sim.getBeta();
+        double summation = 0.0;
+
+        for (int i = 0; i < levels.size() ; i++) {
+            double oneOverLength = (double) 1 / lengths.get(i);
+            summation +=  Math.pow(levels.get(i), alpha) * Math.pow(oneOverLength, beta);
+        }
+
+        for (int i = 0; i < levels.size() ; i++) {
+            double oneOverLength = (double) 1 / lengths.get(i);
+            double numerator = Math.pow(levels.get(i), alpha) * Math.pow(oneOverLength, beta);
+            probabilities.add(numerator / summation);
+        }
         
         return probabilities;
     }
@@ -126,10 +139,12 @@ public class Ant
     public ArrayList<Double> cumulativeProbabilities(ArrayList<Double> probabilities)
     {
         ArrayList<Double> cumulative = new ArrayList<Double>();
+        double sum = 0;
         
-        // YOUR CODE GOES HERE - REPLACE THIS DUMMY CODE
-        cumulative = AntTester.initDoubleArray(new double[]{0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0});
-        // END OF YOUR CODE
+        for (int i = 0; i< probabilities.size(); i++) {
+            sum += probabilities.get(i);
+            cumulative.add(sum);
+        }
         
         return cumulative;
     }
@@ -144,9 +159,15 @@ public class Ant
      */
     public int chooseNextNode(ArrayList<Double> cumulative)
     {
-        // YOUR CODE GOES HERE - REPLACE THIS DUMMY CODE
-        return 0;
-        // END OF YOUR CODE
+        Random r = new Random();
+        double rand = r.nextDouble(1.0);
+        int i = 0;
+
+        while (cumulative.get(i) < rand) {
+            i += 1;
+        }
+
+        return i;
     }
     
     // **** END OF METHODS TO CODE - DO NOT TOUCH ANY CODE BELOW THIS LINE! ****
